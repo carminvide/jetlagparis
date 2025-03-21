@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte des Arrondissements de Paris</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        #map { height: 600px; width: 100%; }
+        .legend {
+            background: white;
+            padding: 10px;
+            line-height: 18px;
+            color: #555;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        }
+        .legend i {
+            width: 18px;
+            height: 18px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    
+    <script>
+        var map = L.map('map').setView([48.8566, 2.3522], 12);
+
+        // Ajouter le fond de carte OpenStreetMap
+        /*L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);*/
+
+        // Tableau des couleurs utilisées
+        var colors = ["blue", "red", "green"];
+
+        // Charger les arrondissements
+        fetch('arrondissements.geojson')
+            .then(response => response.json())
+            .then(data => {
+                L.geoJson(data, {
+                    style: function (feature) {
+                        return { fillColor: "blue", color: "black", weight: 1, fillOpacity: 0.6 };
+                    },
+                    onEachFeature: function (feature, layer) {
+                        //layer.bindPopup(feature.properties.l_ar);
+                        var colorIndex = 0;
+                        layer.on('click', function () {
+                            colorIndex = (colorIndex + 1) % colors.length;
+                            this.setStyle({ fillColor: colors[colorIndex] });
+                        });
+                    }
+                }).addTo(map);
+            })
+            .catch(error => console.error('Erreur lors du chargement du GeoJSON:', error));
+
+        // Ajouter la légende
+        var legend = L.control({ position: "bottomright" });
+
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create("div", "legend");
+            div.innerHTML += "<b>Légende</b><br>";
+            div.innerHTML += '<i style="background: blue"></i> Couleur 1<br>';
+            div.innerHTML += '<i style="background: red"></i> Couleur 2<br>';
+            div.innerHTML += '<i style="background: green"></i> Couleur 3<br>';
+            return div;
+        };
+
+        legend.addTo(map);
+
+        // 📍 Ajouter les mairies des arrondissements sous forme de points et labels
+        var mairies = [
+            { num: "I", coords: [48.8600542868599, 2.3412266726353996] },
+            { num: "II", coords: [48.866838731796555, 2.3404694819804006] },
+            { num: "III", coords: [48.86389423523723, 2.361738039911056] },
+            { num: "IV", coords: [48.856191403915844, 2.3557317383120764] },
+            { num: "V", coords: [48.846158320345104, 2.3444884632990064] },
+            { num: "VI", coords: [48.850572802494376, 2.332579275763973] },
+            { num: "VII", coords: [48.85684217666919, 2.32018422653611] },
+            { num: "VIII", coords: [48.877743968777274, 2.317487209511685] },
+            { num: "IX", coords: [48.87259854774506, 2.3404660117530436] },
+            { num: "X", coords: [48.87192584487234, 2.357504336249212] },
+            { num: "XI", coords: [48.85853784010412, 2.379498467455008] },
+            { num: "XII", coords: [48.84096612257322, 2.3880472355285850] },
+            { num: "XIII", coords: [48.832355076950115, 2.3555383075921594] },
+            { num: "XIV", coords: [48.833054983104894, 2.3268762178512112] },
+            { num: "XV", coords: [48.841387743053325, 2.3002746973528287] },
+            { num: "XVI", coords: [48.86385567871071, 2.276584322119108] },
+            { num: "XVII", coords: [48.88435406900777, 2.322158337527098] },
+            { num: "XVIII", coords: [48.89230563061697, 2.3445788667565517] },
+            { num: "XIX", coords: [48.88285930773522, 2.3819893967557837] },
+            { num: "XX", coords: [48.86510497161803, 2.399003005015117] }
+        ];
+
+        mairies.forEach(mairie => {
+            L.circleMarker(mairie.coords, {
+                radius: 5,  // Taille du point
+                fillColor: "black",
+                color: "white",
+                weight: 1,
+                fillOpacity: 1
+            })
+            .addTo(map)
+            .bindTooltip(mairie.num, { permanent: true, direction: "top", className: "arrondissement-label" });
+        });
+
+    </script>
+</body>
+</html>
