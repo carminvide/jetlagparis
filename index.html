@@ -6,6 +6,9 @@
     <title>Carte des Arrondissements de Paris</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         #map { height: 600px; width: 100%; }
         .legend {
@@ -39,6 +42,23 @@
     <div id="map"></div>
     
     <script>
+        // 🔥 Firebase Config (Replace with your own!)
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+        apiKey: "AIzaSyCa_ZyiBM1zXxnZaynA74pzUPvdEPzBP8M",
+        authDomain: "jetlag-paris.firebaseapp.com",
+        projectId: "jetlag-paris",
+        storageBucket: "jetlag-paris.firebasestorage.app",
+        messagingSenderId: "955294061603",
+        appId: "1:955294061603:web:7578b07b226fac045bcd96",
+        measurementId: "G-D9S5Z074PZ"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+
         var map = L.map('map').setView([48.8566, 2.3522], 12);
 
         // Ajouter le fond de carte OpenStreetMap
